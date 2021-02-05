@@ -20,7 +20,7 @@ go test -v
 
 Assumptions:
 -Because this is a progam that is only run a couple times to find problems, efficiency is less important than clarity of execution.
-Therefore I've focused writing the code in a way that is readable and modular so individual pieces can be readily understood and tested.
+Therefore I've focused on writing the code in a way that is readable and modular so that individual pieces can be readily understood and tested.
 
 -The person running this code has access to the databases in question, and therefore knows the number of records in each.
 Therefore instead of writing a unit test to make sure that every record on the database is tested, I printed out the number of records tested
@@ -28,3 +28,7 @@ for the user to check.
 
 -The person running this code is a developer, and so they don't need command line flags to change the output mode. They can instead choose whether to
 call the printLog, saveLog, or both functions at the end.
+
+-The 'favorite_flavor' column in migrated records is a feature of the new system, therefore should not be compared to the old records.
+
+-The 'favorite_flavor' column in migrated records is not a mandatory field, therefore any migrated records with a missing 'favorite_flavor' column are okay.
