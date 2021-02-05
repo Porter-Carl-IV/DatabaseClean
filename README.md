@@ -4,14 +4,18 @@ Golang tool that takes two public databases, compares for differences, and outpu
 
 To run code:
 publish the docker container of both databases to your own local host on ports 5432 (original db) and 5433 (migrated db) using commands:
+
 docker run -p 5433:5432 guaranteedrate/homework-post-migration:1607545060-a7085621
+
 docker run -p 5432:5432 guaranteedrate/homework-pre-migration:1607545060-a7085621
 
 then migrate to directory and use command
+
 go run check.go
 
 To test code:
 migrate to directory and use command
+
 go test -v
 
 Assumptions:
