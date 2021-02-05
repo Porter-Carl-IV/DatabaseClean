@@ -3,6 +3,7 @@ package main
 import (
     "database/sql"
     "fmt"
+    "errors"
 
     _"github.com/lib/pq"
 )
@@ -187,12 +188,10 @@ Note: Need to make sure length of list is at least 1 before sending to this meth
 func ( origList *OriginalList ) getNextOriginal() OriginalAccount {
   var nextAccount OriginalAccount = origList.Accounts[0]
 
-  if len(origList.Accounts) > 1 {
-    //Put the last element into the first position, then replace the slice
-    //with a version of itself without the last element.
-    origList.Accounts[0] = origList.Accounts[ len(origList.Accounts) - 1 ]
-    origList.Accounts = origList.Accounts[ :len(origList.Accounts) - 1 ]
-  }
+  //Put the last element into the first position, then replace the slice
+  //with a version of itself without the last element.
+  origList.Accounts[0] = origList.Accounts[ len(origList.Accounts) - 1 ]
+  origList.Accounts = origList.Accounts[ :len(origList.Accounts) - 1 ]
 
   return nextAccount
 }
@@ -200,16 +199,16 @@ func ( origList *OriginalList ) getNextOriginal() OriginalAccount {
 /*
 getNextMigrated method grabs the first element from the original account list,
 deletes the account from the slice, and returns it.
+
+Note: Need to make sure length of list is at least 1 before sending to this method
 */
 func ( migList *MigratedList ) getNextMigrated() MigratedAccount {
   var nextAccount MigratedAccount = migList.Accounts[0]
 
-  if len(migList.Accounts) > 1 {
-    //Put the last element into the first position, then replace the slice
-    //with a version of itself without the last element.
-    migList.Accounts[0] = migList.Accounts[ len(migList.Accounts) - 1 ]
-    migList.Accounts = migList.Accounts[ :len(migList.Accounts) - 1 ]
-  }
+  //Put the last element into the first position, then replace the slice
+  //with a version of itself without the last element.
+  migList.Accounts[0] = migList.Accounts[ len(migList.Accounts) - 1 ]
+  migList.Accounts = migList.Accounts[ :len(migList.Accounts) - 1 ]
 
   return nextAccount
 }
@@ -219,11 +218,26 @@ searchMigrated method takes an id string and searches the id values of the
 migrated accounts for that account. If it finds the account it deletes the
 account from the list and returns it. If it doesn't find the account it returns
 an error.
+
+Note: Need to make sure length of list is at least 1 before sending to this method
 */
 func ( migList *MigratedList ) searchMigrated( id string ) (error, MigratedAccount) {
   var matchingAccount MigratedAccount
 
-  return nil, matchingAccount
+  for index := range migList.Accounts {
+    if migList.Accounts[index].Id == id {
+      matchingAccount = migList.Accounts[index]
+
+      //Remove the found account by replacing it with last account, then replacing
+      //slice with everything but last element
+      migList.Accounts[index] = migList.Accounts[ len(migList.Accounts) - 1 ]
+      migList.Accounts = migList.Accounts[ :len(migList.Accounts) - 1 ]
+
+      return nil, matchingAccount
+    }
+  }
+
+  return errors.New("Account not found"), matchingAccount
 }
 
 /*

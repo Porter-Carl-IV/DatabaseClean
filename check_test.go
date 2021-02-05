@@ -45,7 +45,7 @@ func TestGetOrig( test *testing.T ){
     test.Errorf( "Get account failed, expected account 205 got account %s\n" , nextAccount.Id )
   }
 
-  if( len( testList.Accounts ) != 1 ){
+  if( len( testList.Accounts ) != 0 ){
     test.Errorf( "Get account failed, expected 1 record left, got %d\n" , len( testList.Accounts ) )
   }
 }
@@ -71,7 +71,33 @@ func TestGetMig( test *testing.T ){
     test.Errorf( "Get account failed, expected account 205 got account %s\n" , nextAccount.Id )
   }
 
-  if( len( testList.Accounts ) != 1 ){
+  if( len( testList.Accounts ) != 0 ){
     test.Errorf( "Get account failed, expected 1 record left, got %d\n" , len( testList.Accounts ) )
+  }
+}
+
+func TestSearchMig( test *testing.T ){
+  testList := MigratedList{ []MigratedAccount{{ "204" , "Jim" , "jim@yahoo.com" , " " } , { "205" , "Jim" , "jim@yahoo.com" , " " } , { "206" , "Jim" , "jim@yahoo.com" , " " } } }
+
+  err, foundAccount := testList.searchMigrated("204")
+
+  if foundAccount.Id != "204" {
+    test.Errorf( "Search account failed, expected account 204 account %s with error %s\n" , foundAccount.Id , err )
+  }
+
+  err, foundAccount = testList.searchMigrated("205")
+
+  if foundAccount.Id != "205" {
+    test.Errorf( "Search account failed, expected account 205 account %s with error %s\n" , foundAccount.Id , err  )
+  }
+
+  err, foundAccount = testList.searchMigrated("206")
+
+  if foundAccount.Id != "206" {
+    test.Errorf( "Search account failed, expected account 206 got account %s with error %s\n" , foundAccount.Id , err  )
+  }
+
+  if( len( testList.Accounts ) != 0 ){
+    test.Errorf( "Search account failed, expected 1 record left, got %d\n" , len( testList.Accounts ) )
   }
 }
