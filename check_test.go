@@ -135,3 +135,20 @@ func TestAddLog( test *testing.T ) {
     test.Errorf( "Third Add log action failed, expected \"Third Log\" in last but got \"%s\"\n" , testLog.Last.Message)
   }
 }
+
+/*
+This method isn't really a conventional test. To make it one I would need to compare against the stdout bitstream.
+However moving forward with the assumption that in this application it's not worth taking the extra time to implement
+the test that way.
+*/
+func TestPrintLog( test *testing.T ) {
+  testLog := ErrorLog{ nil , nil }
+
+  testLog.addLog( "First Log\n" )
+  testLog.addLog( "Second Log\n" )
+  testLog.addLog( "Third Log\n" )
+
+  print("Expect:\nFirst Log\nSecond Log\nThird Log\nGot:\n")
+
+  testLog.printLog()
+}

@@ -261,7 +261,14 @@ func ( errorLog *ErrorLog ) addLog( newError string ) {
 printLog method prints the entire list out in a terminal
 */
 func ( errorLog *ErrorLog ) printLog() {
+  currentLog := errorLog.Root
 
+  for currentLog.Next != nil {
+    print( currentLog.Message )
+    currentLog = currentLog.Next
+  }
+
+  print( currentLog.Message )
 }
 
 /*
