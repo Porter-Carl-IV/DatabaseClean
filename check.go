@@ -111,18 +111,26 @@ func main(){
   corruptedLog.addLog("==========CORRUPTED ACCOUNTS==========\n")
   newLog.addLog("==========NEW ACCOUNTS==========\n")
 
+  //Initialize accuracy counts
+  missingCount := 0
+  corruptedCount := 0
+  newCount := 0
+  origChecked := 0
+  migChecked := 0
+  origRecords := len(origList.Accounts)
+  migRecords := len(migList.Accounts)
+
+  //Print out total accounts being checked
+  fmt.Printf( "Original Accounts: %d\n" , origRecords )
+  fmt.Printf( "Migrated Accounts: %d\n" , migRecords )
+
   //Iterate through original accounts, find missing and corrupted data
   var currentOrigAccount OriginalAccount
   var currentMigAccount MigratedAccount
 
-  fmt.Printf( "Original Accounts: %d\n" , len( origList.Accounts ) )
-  fmt.Printf( "Migrated Accounts: %d\n" , len( migList.Accounts ) )
-  missingCount := 0
-  corruptedCount := 0
-  newCount := 0
-
   for len(origList.Accounts) > 0 {
     currentOrigAccount = origList.getNextOriginal()
+    origChecked++
 
     //Find matching migrated account
     err, currentMigAccount = migList.searchMigrated( currentOrigAccount.Id )
@@ -131,7 +139,9 @@ func main(){
       missingLog.addLog(
         fmt.Sprintf("Missing record with:\nID: %s\nName:%s\nEmail:%s\n\n", currentOrigAccount.Id , currentOrigAccount.Name , currentOrigAccount.Email ))
     } else {
+      //Check for errors with migrated accounts
       errorMessage, errorCount := compareAccounts( currentOrigAccount, currentMigAccount )
+      migChecked++
       if errorCount > 0 {
         corruptedCount++
         corruptedLog.addLog( errorMessage )
@@ -145,6 +155,7 @@ func main(){
     currentMigAccount = migList.getNextMigrated()
 
     newCount++
+    migChecked++
 
     newLog.addLog(
       fmt.Sprintf("New record with:\nID: %s\nName:%s\nEmail:%s\nFavorite Flavor:%s\n\n", currentMigAccount.Id , currentMigAccount.Name , currentMigAccount.Email , currentMigAccount.FavoriteFlavor))
@@ -154,6 +165,15 @@ func main(){
   fmt.Printf( "Corrupted Accounts: %d\n" , corruptedCount )
   fmt.Printf( "New Accounts: %d\n" , newCount )
 
+  //Make sure that all records have been iterated over
+  if origChecked != origRecords {
+    fmt.Printf("Only checked %d out of %d records\n" , origChecked , origRecords)
+  }
+  if migChecked != migRecords {
+    fmt.Printf("Only checked %d out of %d migrated records\n" , migChecked , migRecords)
+  }
+
+  //Print logs to file, could instead print to screen with log.printLog instead
   missingLog.saveLog("MissingLog.txt")
   corruptedLog.saveLog("CorruptedLog.txt")
   newLog.saveLog("NewLog.txt")
