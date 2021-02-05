@@ -102,6 +102,61 @@ func main(){
     panic( err )
   }
 
+  //Initialize logs
+  missingLog := ErrorLog{nil, nil}
+  corruptedLog := ErrorLog{nil, nil}
+  newLog := ErrorLog{nil, nil}
+
+  missingLog.addLog("==========MISSING ACCOUNTS==========\n")
+  corruptedLog.addLog("==========CORRUPTED ACCOUNTS==========\n")
+  newLog.addLog("==========NEW ACCOUNTS==========\n")
+
+  //Iterate through original accounts, find missing and corrupted data
+  var currentOrigAccount OriginalAccount
+  var currentMigAccount MigratedAccount
+
+  fmt.Printf( "Original Accounts: %d\n" , len( origList.Accounts ) )
+  fmt.Printf( "Migrated Accounts: %d\n" , len( migList.Accounts ) )
+  missingCount := 0
+  corruptedCount := 0
+  newCount := 0
+
+  for len(origList.Accounts) > 0 {
+    currentOrigAccount = origList.getNextOriginal()
+
+    //Find matching migrated account
+    err, currentMigAccount = migList.searchMigrated( currentOrigAccount.Id )
+    if err != nil{
+      missingCount++;
+      missingLog.addLog(
+        fmt.Sprintf("Missing record with:\nID: %s\nName:%s\nEmail:%s\n\n", currentOrigAccount.Id , currentOrigAccount.Name , currentOrigAccount.Email ))
+    } else {
+      errorMessage, errorCount := compareAccounts( currentOrigAccount, currentMigAccount )
+      if errorCount > 0 {
+        corruptedCount++
+        corruptedLog.addLog( errorMessage )
+      }
+    }
+  }
+
+  //Now that we've removed all matching migrated accounts and all original accounts
+  //Iterate through remaining migrated accounts and log them as new accounts
+  for len(migList.Accounts) > 0 {
+    currentMigAccount = migList.getNextMigrated()
+
+    newCount++
+
+    newLog.addLog(
+      fmt.Sprintf("New record with:\nID: %s\nName:%s\nEmail:%s\nFavorite Flavor:%s\n\n", currentMigAccount.Id , currentMigAccount.Name , currentMigAccount.Email , currentMigAccount.FavoriteFlavor))
+  }
+
+  fmt.Printf( "Missing Accounts: %d\n" , missingCount )
+  fmt.Printf( "Corrupted Accounts: %d\n" , corruptedCount )
+  fmt.Printf( "New Accounts: %d\n" , newCount )
+
+  missingLog.saveLog("MissingLog.txt")
+  corruptedLog.saveLog("CorruptedLog.txt")
+  newLog.saveLog("NewLog.txt")
 }
 
 /*
