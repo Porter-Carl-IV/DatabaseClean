@@ -107,8 +107,24 @@ Compare Accounts method takes an original account and migrated account struct.
 Compares the relevant fields in each struct, and returns an error message
 if the fields don't match.
 */
-func compareAccounts( orig OriginalAccount, mig MigratedAccount ) error {
-  return nil
+func compareAccounts( orig OriginalAccount, mig MigratedAccount ) ( string, int ) {
+  var errorText string = fmt.Sprintf("Conflict between original and migrated version of account %s\n" , orig.Id )
+  var errors int = 0
+
+  if orig.Name != mig.Name {
+    errors++
+    errorText += fmt.Sprintf("Original name: %s\nMigrated name: %s\n\n" , orig.Name , mig.Name )
+  }
+  if orig.Email != mig.Email {
+    errors++
+    errorText += fmt.Sprintf("Original email: %s\nMigrated email: %s\n\n" , orig.Email , mig.Email )
+  }
+
+  if errors == 0 {
+    return "", 0
+  }
+
+  return errorText, errors
 }
 
 /*
