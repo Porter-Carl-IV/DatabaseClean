@@ -201,8 +201,17 @@ func ( origList *OriginalList ) getNextOriginal() OriginalAccount {
 getNextMigrated method grabs the first element from the original account list,
 deletes the account from the slice, and returns it.
 */
-func ( migList *MigratedList ) getNextMigrated() error {
-  return nil
+func ( migList *MigratedList ) getNextMigrated() MigratedAccount {
+  var nextAccount MigratedAccount = migList.Accounts[0]
+
+  if len(migList.Accounts) > 1 {
+    //Put the last element into the first position, then replace the slice
+    //with a version of itself without the last element.
+    migList.Accounts[0] = migList.Accounts[ len(migList.Accounts) - 1 ]
+    migList.Accounts = migList.Accounts[ :len(migList.Accounts) - 1 ]
+  }
+
+  return nextAccount
 }
 
 /*
