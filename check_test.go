@@ -23,3 +23,29 @@ func TestCompare( test *testing.T ){
     test.Errorf( "Compare failed, expected 2 errors got %d errors with message %s\n" , errors , errorString )
   }
 }
+
+func TestGetOrig( test *testing.T ){
+  testList := OriginalList{ []OriginalAccount{{ "204" , "Jim" , "jim@yahoo.com" } , { "205" , "Jim" , "jim@yahoo.com" } , { "206" , "Jim" , "jim@yahoo.com" } } }
+
+  nextAccount := testList.getNextOriginal()
+
+  if nextAccount.Id != "204" {
+    test.Errorf( "Get account failed, expected account 204 got account %s\n" , nextAccount.Id )
+  }
+
+  nextAccount = testList.getNextOriginal()
+
+  if nextAccount.Id != "206" {
+    test.Errorf( "Get account failed, expected account 206 got account %s\n" , nextAccount.Id )
+  }
+
+  nextAccount = testList.getNextOriginal()
+
+  if nextAccount.Id != "205" {
+    test.Errorf( "Get account failed, expected account 205 got account %s\n" , nextAccount.Id )
+  }
+
+  if( len( testList.Accounts ) != 1 ){
+    test.Errorf( "Get account failed, expected 1 record left, got %d\n" , len( testList.Accounts ) )
+  }
+}

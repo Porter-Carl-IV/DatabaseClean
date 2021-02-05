@@ -181,9 +181,18 @@ func ( origList *OriginalList ) initializeOriginal() error {
 /*
 getNextOriginal method grabs the first element from the original account list,
 deletes the account from the slice, and returns it.
+
+Note: Need to make sure length of list is at least 1 before sending to this method
 */
 func ( origList *OriginalList ) getNextOriginal() OriginalAccount {
-  var nextAccount OriginalAccount
+  var nextAccount OriginalAccount = origList.Accounts[0]
+
+  if len(origList.Accounts) > 1 {
+    //Put the last element into the first position, then replace the slice
+    //with a version of itself without the last element.
+    origList.Accounts[0] = origList.Accounts[ len(origList.Accounts) - 1 ]
+    origList.Accounts = origList.Accounts[ :len(origList.Accounts) - 1 ]
+  }
 
   return nextAccount
 }
