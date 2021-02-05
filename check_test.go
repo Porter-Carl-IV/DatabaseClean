@@ -101,3 +101,37 @@ func TestSearchMig( test *testing.T ){
     test.Errorf( "Search account failed, expected 1 record left, got %d\n" , len( testList.Accounts ) )
   }
 }
+
+func TestAddLog( test *testing.T ) {
+  testLog := ErrorLog{ nil , nil }
+
+  testLog.addLog( "First Log" )
+
+  if testLog.Root.Message != "First Log" {
+    test.Errorf( "Add log action failed, expected \"First Log\" but got \"%s\"\n" , testLog.Root.Message )
+  }
+
+  testLog.addLog( "Second Log" )
+
+  if testLog.Root.Message != "First Log" {
+    test.Errorf( "Second Add log action failed, expected \"First Log\" still in root but got \"%s\"\n" , testLog.Root.Message )
+  }
+
+  if testLog.Last.Message != "Second Log" {
+    test.Errorf( "Second Add log action failed, expected \"Second Log\" in last but got \"%s\"\n" , testLog.Last.Message )
+  }
+
+  testLog.addLog( "Third Log" )
+
+  if testLog.Root.Message != "First Log" {
+    test.Errorf( "Third Add log action failed, expected \"First Log\" still in root but got \"%s\"\n" , testLog.Root.Message )
+  }
+
+  if testLog.Root.Next.Message != "Second Log" {
+    test.Errorf( "Third Add log action failed, expected \"Second Log\" next of root but got \"%s\"\n" , testLog.Root.Next.Message )
+  }
+
+  if testLog.Last.Message != "Third Log" {
+    test.Errorf( "Third Add log action failed, expected \"Third Log\" in last but got \"%s\"\n" , testLog.Last.Message)
+  }
+}

@@ -42,12 +42,12 @@ type OriginalAccount struct {
 }
 
 type ErrorLog struct {
-  root *LogEntry
-  last *LogEntry
+  Root *LogEntry
+  Last *LogEntry
 }
 type LogEntry struct {
-  message string
-  next *LogEntry
+  Message string
+  Next *LogEntry
 }
 
 var dbOrig *sql.DB
@@ -244,7 +244,17 @@ func ( migList *MigratedList ) searchMigrated( id string ) (error, MigratedAccou
 addLog method takes a string and appends it to the logs linked list.
 */
 func ( errorLog *ErrorLog ) addLog( newError string ) {
+  newEntry := LogEntry{ newError , nil }
 
+  if errorLog.Root == nil {
+    errorLog.Root = &newEntry
+    errorLog.Last = errorLog.Root
+
+    return
+  }
+
+  errorLog.Last.Next = &newEntry
+  errorLog.Last = errorLog.Last.Next
 }
 
 /*
