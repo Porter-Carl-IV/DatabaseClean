@@ -152,3 +152,15 @@ func TestPrintLog( test *testing.T ) {
 
   testLog.printLog()
 }
+
+func TestSaveLog( test *testing.T ) {
+  testLog := ErrorLog{ nil , nil }
+
+  testLog.addLog( "First Log\n" )
+  testLog.addLog( "Second Log\n" )
+  testLog.addLog( "Third Log\n" )
+
+  testLog.saveLog("TestLog.txt")
+
+  print("TestLog.txt file should be in directory with 3 logs\n")
+}

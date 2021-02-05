@@ -4,6 +4,7 @@ import (
     "database/sql"
     "fmt"
     "errors"
+    "os"
 
     _"github.com/lib/pq"
 )
@@ -274,6 +275,26 @@ func ( errorLog *ErrorLog ) printLog() {
 /*
 saveLog method prints the entire log out into a text document
 */
-func ( errorLog *ErrorLog ) saveLog() {
+func ( errorLog *ErrorLog ) saveLog( fileName string ) {
+  currentLog := errorLog.Root
+
+  file, err := os.Create( fileName )
+  if err != nil {
+    panic( err )
+  }
+
+  defer file.Close()
+
+  for currentLog.Next != nil {
+    _, err = file.WriteString( currentLog.Message )
+
+    if err != nil {
+      panic( err )
+    }
+    currentLog = currentLog.Next
+  }
+
+  file.WriteString( currentLog.Message )
+
 
 }
